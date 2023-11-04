@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MRU y MRUV</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-group">
+            <label for="movimiento">Seleccione el tipo de movimiento:</label>
+            <select id="movimiento">
+                <option value="mru">MRU</option>
+                <option value="mruv">MRUV</option>
+            </select>
+        </div>
+
+        <div id="mru-info" class="form-group">
+            <h2>MRU - Movimiento Rectilíneo Uniforme</h2>
+            <p>En el movimiento rectilíneo uniforme, la velocidad es constante y el objeto se mueve en línea recta.</p>
+            <label for="mru-velocidad">Velocidad (m/s): </label>
+            <input type="number" id="mru-velocidad">
+            <button onclick="generarGraficaMRU()">Generar Gráfica</button>
+            <div id="mru-grafica"></div>
+        </div>
+
+        <div id="mruv-info" class="form-group" style="display: none;">
+            <h2>MRUV - Movimiento Rectilíneo Uniformemente Variado</h2>
+            <p>En el movimiento rectilíneo uniformemente variado, la velocidad cambia uniformemente y el objeto se mueve en línea recta.</p>
+            <div id="mruv-graficas"></div>
+        </div>
+    </div>
+
+    <script>
+        function generarGraficaMRU() {
+            const velocidad = parseFloat(document.getElementById('mru-velocidad').value);
+            const tiempo = [0, 1, 2, 3, 4, 5]; // Tiempos de ejemplo (segundos)
+            const posicion = tiempo.map(t => velocidad * t); // Calcula la posición en función del tiempo
+
+            const data = [{
+                x: tiempo,
+                y: posicion,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Posición vs Tiempo'
+            }];
+
+            const layout = {
+                title: 'Gráfica MRU',
+                xaxis: {
+                    title: 'Tiempo (s)'
+                },
+                yaxis: {
+                    title: 'Posición (m)'
+                }
+            };
+
+            Plotly.newPlot('mru-grafica', data, layout);
+        }
+
+        document.getElementById('movimiento').addEventListener('change', function () {
+            const tipoMovimiento = this.value;
+            if (tipoMovimiento === 'mru') {
+                document.getElementById('mru-info').style.display = 'block';
+                document.getElementById('mruv-info').style.display = 'none';
+            } else if (tipoMovimiento === 'mruv') {
+                document.getElementById('mru-info').style.display = 'none';
+                document.getElementById('mruv-info').style.display = 'block';
+                generarGraficasMRUV();
+            }
+        });
+
+        function generarGraficasMRUV() {
+            const tiempo = [0, 1, 2, 3, 4, 5]; // Tiempos de ejemplo (segundos)
+            const velocidadInicial = 2; // Velocidad inicial en m/s
+            const aceleracion = 1.5; // Aceleración en m/s^2
+
+            const velocidad = tiempo.map(t => velocidadInicial + aceleracion * t); // Calcula la velocidad en función del tiempo
+            const posicion = tiempo.map(t => velocidadInicial * t + 0.5 * aceleracion * Math.pow(t, 2)); // Calcula la posición en función del tiempo
+
+            const velocidadData = [{
+                x: tiempo,
+                y: velocidad,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Velocidad vs Tiempo'
+            }];
+
+            const posicionData = [{
+                x: tiempo,
+                y: posicion,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Posición vs Tiempo'
+            }];
+
+            const layout = {
+                title: 'Gráficas MRUV',
+                xaxis: {
+                    title: 'Tiempo (s)'
+                },
+                yaxis: {
+                    title: 'Velocidad (m/s)'
+                }
+            };
+
+            Plotly.newPlot('mruv-graficas', velocidadData, layout);
+
+            layout.yaxis.title = 'Posición (m)';
+            Plotly.newPlot('mruv-graficas', posicionData, layout);
+        }
+    </script>
+</body>
+
+</html>
